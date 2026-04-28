@@ -18,36 +18,7 @@ export default function AIAssistant() {
     }
   }, [history]);
 
-  const generateSystemPrompt = () => {
-    // Stringify the test schemas to give Gemini the full database of capabilities
-    const availableTests = testsConfig.flatMap(c => c.tests.map(t => ({
-      id: t.id,
-      name: t.name,
-      description: t.docs,
-      required_arguments: t.args.map(a => `${a.name} (${a.label}, default: ${a.default})`)
-    })));
 
-    return `You are a statistical advisor helping a clinical researcher calculate a sample size using the pwrSS library.
-You have access to the following tests and their parameters:
-${JSON.stringify(availableTests, null, 2)}
-
-YOUR BEHAVIOR:
-1. Ask the user questions to deduce which test they need.
-2. Ask the user for the parameters required by that test (like alpha, power, expected means, variance, etc.).
-}
-Your JSON format must be exactly:
-{
-  "status": "ready",
-  "testId": "<id of test>",
-  "calculation_mode": "<evaluate the conversation: if the user wants to calculate sample size, output 'sample_size'. If they want to calculate statistical power, output 'power'. If it is completely ambiguous, assume 'sample_size'.>",
-  "reasoning": "<1 to 2 paragraphs explicitly explaining your reasoning for choosing this specific statistical test over the alternatives based on their study design. Write professionally.>",
-  "source_link": "<the URL given in the 'resource' property of the test config you selected>",
-  "parameters": {
-     "<argName>": <value>
-  }
-}
-Your JSON response will be intercepted by the UI and instantly calculate the result for the user. Do not wrap the JSON in \`\`\`. Just output raw JSON starting with {.`;
-  };
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
@@ -63,8 +34,7 @@ Your JSON response will be intercepted by the UI and instantly calculate the res
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: chatArray,
-          systemInstruction: generateSystemPrompt()
+          messages: chatArray
         })
       });
       const data = await res.json();
