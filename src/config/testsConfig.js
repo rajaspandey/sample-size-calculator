@@ -36,7 +36,7 @@ export const testsConfig = [
       {
         id: "ttest-paired",
         name: "Paired Means T-Test",
-        func: "pwrss::pwrss.t.paired",
+        func: "pwrss::pwrss.t.2means",
         docs: "The paired t-test compares the means of two paired or dependent groups (such as pre-test and post-test values from the exact same cohort of subjects). Because the samples are correlated, it requires the expected correlation (paired.r) to properly narrow down the statistical variance.",
         resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
         args: [
@@ -86,7 +86,7 @@ export const testsConfig = [
       {
         id: "ztest-cor",
         name: "One Correlation Z-Test",
-        func: "pwrss::pwrss.z.cor",
+        func: "pwrss::pwrss.z.corr",
         docs: "A Z-test for a Pearson correlation coefficient. Determines if an observed linear correlation between two continuous sets of data deviates from a given reference (often 0, implying no correlation).",
         resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
         args: [
@@ -100,7 +100,7 @@ export const testsConfig = [
       {
         id: "ztest-2cors",
         name: "Two Independent Correlations",
-        func: "pwrss::pwrss.z.2cors",
+        func: "pwrss::pwrss.z.2corrs",
         docs: "Tests the difference between two completely distinct correlation coefficients evaluated on independent samples after applying the Fisher Z transformation.",
         resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
         args: [
@@ -137,7 +137,7 @@ export const testsConfig = [
         resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
         args: [
           { name: "beta1", label: "Expected Std. Coefficient", type: "number", step: "0.01", default: 0.15 },
-          { name: "r2.other.x", label: "R-squared of other predictors", type: "number", step: "0.01", default: 0 },
+          { name: "r2", label: "R-squared of predictors", type: "number", step: "0.01", default: 0 },
           { name: "k", label: "Total Predictors", type: "number", step: "1", default: 3 },
           { name: "alpha", label: "Alpha", type: "number", step: "0.01", default: 0.05 },
           { name: "power", label: "Target Power", type: "number", step: "0.01", default: 0.8 },
@@ -158,62 +158,72 @@ export const testsConfig = [
           { name: "power", label: "Target Power", type: "number", step: "0.01", default: 0.8 },
           { name: "alternative", label: "Alternative Hypothesis", type: "select", options: ["not equal", "greater", "less"], default: "not equal" }
         ]
-      },
-      {
-        id: "reg-pois",
-        name: "Poisson Regression (Wald Z)",
-        func: "pwrss::pwrss.z.poisreg",
-        docs: "Evaluates Poisson count models (used heavily for incidents/occurrences over time) focusing on the relative expected incidence rate ratio of a treatment predictor vs baseline.",
-        resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
-        args: [
-          { name: "exp.beta1", label: "Expected Rate Ratio", type: "number", step: "0.01", default: 1.2 },
-          { name: "base.rate", label: "Baseline Rate", type: "number", step: "0.01", default: 1.0 },
-          { name: "alpha", label: "Alpha", type: "number", step: "0.01", default: 0.05 },
-          { name: "power", label: "Target Power", type: "number", step: "0.01", default: 0.8 },
-          { name: "alternative", label: "Alternative Hypothesis", type: "select", options: ["not equal", "greater", "less"], default: "not equal" }
-        ]
-      },
-      {
-        id: "reg-med",
-        name: "Mediation Regression (Sobel)",
-        func: "pwrss::pwrss.z.med",
-        docs: "A Sobel mediation analysis checks whether the intermediary indirect effect of a predictor across a specified variable is statistically significant to the final endpoint.",
-        resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
-        args: [
-          { name: "a", label: "Path a coefficient", type: "number", step: "0.01", default: 0.25 },
-          { name: "b", label: "Path b coefficient", type: "number", step: "0.01", default: 0.25 },
-          { name: "alpha", label: "Alpha", type: "number", step: "0.01", default: 0.05 },
-          { name: "power", label: "Target Power", type: "number", step: "0.01", default: 0.8 },
-          { name: "alternative", label: "Alternative Hypothesis", type: "select", options: ["not equal", "greater", "less"], default: "not equal" }
-        ]
       }
     ]
   },
   {
-    category: "ANOVA",
+    category: "Advanced ANOVA",
     tests: [
       {
-        id: "anova-1way",
-        name: "One-Way ANOVA",
-        func: "pwrss::pwrss.f.anova",
-        docs: "One-Way Analysis of Variance extrapolates the logic of a T-test beyond two distinct categories, proving whether variations between the independent cluster categories overcome within-group variance.",
+        id: "anova-f-ancova",
+        name: "ANCOVA (F-Test)",
+        func: "pwrss::power.f.ancova",
+        docs: "Power analysis for factorial ANCOVA designs.",
         resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
+        nParam: "n.total",
         args: [
-          { name: "eta2", label: "Expected Eta-squared", type: "number", step: "0.01", default: 0.05 },
-          { name: "k", label: "Number of Groups (k)", type: "number", step: "1", default: 3 },
+          { name: "eta.squared", label: "Expected Eta-squared", type: "number", step: "0.01", default: 0.05 },
+          { name: "factor.levels", label: "Factor Levels (e.g. c(2,2))", type: "raw", default: "c(2, 2)" },
+          { name: "k.covariates", label: "Number of Covariates", type: "number", step: "1", default: 0 },
           { name: "alpha", label: "Alpha", type: "number", step: "0.01", default: 0.05 },
           { name: "power", label: "Target Power", type: "number", step: "0.01", default: 0.8 }
         ]
       },
       {
-        id: "anova-rm",
-        name: "Repeated Measures ANOVA",
-        func: "pwrss::pwrss.f.rmanova",
-        docs: "Applies to Mixed-effects / Repeated Measurements where units undergo multiple measurements during a study. This dramatically reduces error variance.",
+        id: "anova-f-keppel",
+        name: "ANCOVA (Keppel)",
+        func: "pwrss::power.f.ancova.keppel",
+        docs: "Power analysis for one-way ANOVA/ANCOVA using means and standard deviations.",
         resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
+        nParam: "n.total",
         args: [
-          { name: "eta2", label: "Expected Eta-squared", type: "number", step: "0.01", default: 0.05 },
-          { name: "levels", label: "Number of Repeated Measurements", type: "number", step: "1", default: 3 },
+          { name: "mu.vector", label: "Means vector (e.g. c(1.2, 1.4, 1.8))", type: "raw", default: "c(1.2, 1.4, 1.8)" },
+          { name: "sd.vector", label: "SD vector (e.g. c(1, 1, 1))", type: "raw", default: "c(1, 1, 1)" },
+          { name: "p.vector", label: "Allocation proportions (c(0.33, 0.33, 0.33))", type: "raw", default: "c(0.33, 0.33, 0.33)" },
+          { name: "r.squared", label: "R-squared of covariates", type: "number", step: "0.01", default: 0 },
+          { name: "k.covariates", label: "Number of Covariates", type: "number", step: "1", default: 0 },
+          { name: "alpha", label: "Alpha", type: "number", step: "0.01", default: 0.05 },
+          { name: "power", label: "Target Power", type: "number", step: "0.01", default: 0.8 }
+        ]
+      },
+      {
+        id: "anova-f-shieh",
+        name: "ANCOVA (Shieh)",
+        func: "pwrss::power.f.ancova.shieh",
+        docs: "Power analysis for ANCOVA designs based on Shieh leveraging exact contrast matrices and outcome distributions.",
+        resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
+        nParam: "n.total",
+        args: [
+          { name: "mu.vector", label: "Means vector (e.g. c(1.2, 1.4, 1.8))", type: "raw", default: "c(1.2, 1.4, 1.8)" },
+          { name: "sd.vector", label: "SD vector (e.g. c(1, 1, 1))", type: "raw", default: "c(1, 1, 1)" },
+          { name: "r.squared.outcome", label: "Outcome variance R-squared", type: "number", step: "0.01", default: 0 },
+          { name: "r.squared.mediator", label: "Mediator variance R-squared", type: "number", step: "0.01", default: 0 },
+          { name: "alpha", label: "Alpha", type: "number", step: "0.01", default: 0.05 },
+          { name: "power", label: "Target Power", type: "number", step: "0.01", default: 0.8 }
+        ]
+      },
+      {
+        id: "anova-f-mixed",
+        name: "Mixed-Design ANOVA",
+        func: "pwrss::power.f.mixed.anova",
+        docs: "Power analysis for mixed-design (split-plot) ANOVAs spanning between and within-subject repeated structures.",
+        resource: "https://cran.r-project.org/web/packages/pwrss/vignettes/examples.html",
+        nParam: "n.total",
+        args: [
+          { name: "eta.squared", label: "Expected Eta-squared", type: "number", step: "0.01", default: 0.05 },
+          { name: "factor.levels", label: "Factor Levels c(between, within)", type: "raw", default: "c(2, 3)" },
+          { name: "rho.within", label: "Intra-class Correlation", type: "number", step: "0.01", default: 0.5 },
+          { name: "effect", label: "Analysis Path", type: "select", options: ["between", "within", "interaction"], default: "interaction" },
           { name: "alpha", label: "Alpha", type: "number", step: "0.01", default: 0.05 },
           { name: "power", label: "Target Power", type: "number", step: "0.01", default: 0.8 }
         ]
